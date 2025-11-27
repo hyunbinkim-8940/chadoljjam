@@ -183,12 +183,7 @@ const ImpactMap: React.FC<ImpactMapProps> = ({
         size = INACTIVE_NODE_SIZE;
       }
 
-      // 노드별 랜덤 스파클 딜레이 (id 기반 해시)
-      const idSeed = String((node as any).id ?? node.name ?? '');
-      const hash = Array.from(idSeed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-      const sparkleDelay = ((hash % 1000) / 1000) * 2.5; // 0 ~ 2.5초
-
-      return { ...node, xPercent, yPercent, size, sparkleDelay };
+      return { ...node, xPercent, yPercent, size };
     });
 
     // inactive 먼저, active 나중 (active가 위에 보이도록)
@@ -336,10 +331,10 @@ const ImpactMap: React.FC<ImpactMapProps> = ({
                     onSelectNode(isSelected ? null : node);
                   }}
                 >
-                  {/* 홀로그램 코어 */}
+                  {/* 기본 코어 (홀로그램 제거, 심플한 색/링만 유지) */}
                   <div
                     className={`
-                      relative w-full h-full rounded-full transition-all duration-300
+                      w-full h-full rounded-full transition-all duration-300
                       ${
                         isActive
                           ? node.bias === 'ATOM'
@@ -352,56 +347,19 @@ const ImpactMap: React.FC<ImpactMapProps> = ({
                       ${isActive ? 'opacity-80' : 'opacity-30'}
                       ${
                         isSelected
-                          ? `shadow-[0_0_24px_rgba(255,255,255,0.8)] ring-4 ring-white/80 dark:ring-white/50 ${
+                          ? `ring-4 ring-white/80 dark:ring-white/50 ${
                               node.bias === 'ATOM'
                                 ? 'ring-offset-aether-atom'
                                 : node.bias === 'ATOMONE'
                                 ? 'ring-offset-aether-one'
                                 : 'ring-offset-aether-mixed'
-                            } ring-offset-2`
+                            } ring-offset-2 shadow-lg`
                           : isActive
-                          ? 'ring-1 ring-black/5 dark:ring-white/20 shadow-[0_0_18px_rgba(148,163,253,0.55)]'
+                          ? 'ring-1 ring-black/5 dark:ring-white/20 shadow-md'
                           : ''
                       }
                     `}
-                  >
-                    {/* 미세한 스펙클 + 굴절감 (활성 노드만) */}
-                    {isActive && (
-                      <>
-                        <div
-                          className="
-                            absolute inset-0 rounded-full
-                            bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.65),transparent_55%),radial-gradient(circle_at_100%_100%,rgba(56,189,248,0.55),transparent_55%)]
-                            mix-blend-screen
-                            blur-[1.5px]
-                            opacity-60
-                            group-hover:opacity-90
-                            group-hover:blur-[3px]
-                            transition-all
-                            duration-500
-                            pointer-events-none
-                          "
-                        />
-
-                        {/* 랜덤 딜레이가 걸린 홀로그램 글로우 */}
-                        <div
-                          className="
-                            absolute inset-[-25%] rounded-full
-                            bg-[conic-gradient(from_0deg,rgba(244,244,245,0)_0deg,rgba(244,244,245,0.9)_80deg,rgba(56,189,248,0.9)_160deg,rgba(147,51,234,0.9)_240deg,rgba(244,244,245,0)_320deg)]
-                            opacity-50
-                            group-hover:opacity-90
-                            mix-blend-screen
-                            blur-[6px]
-                            animate-pulse
-                            pointer-events-none
-                          "
-                          style={{
-                            animationDelay: `${node.sparkleDelay}s`, // 노드별 랜덤 타이밍
-                          }}
-                        />
-                      </>
-                    )}
-                  </div>
+                  />
 
                   {/* Tooltip */}
                   {isActive && (
